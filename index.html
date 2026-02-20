@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FICup 26/27 | Official App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f0f4f8; overflow-x: hidden; }
+        
+        /* Grafica Card Pro */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+        }
+
+        /* Animazioni caricamento */
+        .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
+        .btn-loading::after {
+            content: ""; position: absolute; width: 20px; height: 20px; top: 50%; left: 50%;
+            margin: -10px 0 0 -10px; border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Sidebar & Overlay */
+        .sidebar {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: #1e293b; color: white; padding: 25px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
+        }
+        .sidebar.open { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.2); }
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(2px);
+            z-index: 999; display: none; animation: fadeIn 0.3s;
+        }
+
+        /* Sezione WIP Animata */
+        .wip-container {
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            height: 50vh; text-align: center; animation: slideUp 0.5s ease-out;
+        }
+        .wip-icon {
+            font-size: 5rem; color: #2563eb; margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .nav-shadow { box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+  
+ html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Assicura che le card non escano mai */
+.glass-card {
+    box-sizing: border-box;
+    width: 100%;
+}
+      
+        
+    </style>
+</head>
+<body class="pb-24">
+
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+    <div id="sidebar" class="sidebar">
+        <div class="text-2xl font-800 mb-8 text-blue-400">FICUP 26/27</div>
+        <nav class="space-y-4">
+            <a href="#" onclick="showSection('Home')" class="flex items-center gap-3 p-3 hover:bg-slate-700 rounded-xl transition"><i class="fas fa-home"></i> Home</a>
+            <a href="#" onclick="showSection('Classifiche')" class="flex items-center gap-3 p-3 hover:bg-slate-700 rounded-xl transition"><i class="fas fa-trophy"></i> Classifiche</a>
+            <a href="#" onclick="showSection('Mercato')" class="flex items-center gap-3 p-3 hover:bg-slate-700 rounded-xl transition"><i class="fas fa-handshake"></i> Mercato</a>
+            <a href="#" onclick="showSection('Profilo')" class="flex items-center gap-3 p-3 hover:bg-slate-700 rounded-xl transition"><i class="fas fa-user-circle"></i> Mio Profilo</a>
+        </nav>
+    </div>
+
+    <header class="bg-blue-600 pt-10 pb-20 px-6 text-center rounded-b-[40px] shadow-lg relative">
+        <button onclick="toggleSidebar()" class="absolute left-6 top-10 text-white text-2xl active:scale-90 transition">
+            <i class="fas fa-bars-staggered"></i>
+        </button>
+        <h1 class="text-white text-3xl font-extrabold tracking-tight">FICUP <span class="text-blue-200">26/27</span></h1>
+        <p class="text-blue-100 text-xs mt-1 opacity-80 uppercase tracking-widest font-semibold">Official Web App</p>
+    </header>
+
+    <main class="container mx-auto px-6 -mt-10 relative z-10">
+        
+        <div id="home-content">
+            <div class="glass-card p-8 shadow-xl mb-6">
+                <div class="flex items-center mb-6">
+                    <div class="bg-blue-100 p-3 rounded-full mr-4 text-blue-600">
+                        <i class="fas fa-bolt text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Iscrizione</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase ml-1">Nome Squadra</label>
+                        <input type="text" id="nome" placeholder="Es. AC Picchia" class="w-full px-4 py-3 rounded-xl border border-gray-100 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase ml-1">Email Ufficiale</label>
+                        <input type="email" id="email" placeholder="nome@esempio.it" class="w-full px-4 py-3 rounded-xl border border-gray-100 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1 uppercase ml-1">Cellulare</label>
+                        <input type="tel" id="cellulare" placeholder="333 0000000" class="w-full px-4 py-3 rounded-xl border border-gray-100 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    </div>
+
+                    <button onclick="invia('iscrivi')" id="btn-iscrivi" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95 uppercase tracking-wide">
+                        Conferma Iscrizione
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 border-dashed border-2 border-red-100">
+                <h3 class="text-gray-700 font-bold mb-3 flex items-center text-sm">
+                    <i class="fas fa-shield-halved text-red-500 mr-2"></i> Gestione Dati
+                </h3>
+                <div class="flex gap-2">
+                    <input type="email" id="emailCanc" placeholder="Tua email..." class="flex-1 px-4 py-2 rounded-lg border border-gray-100 text-sm outline-none bg-gray-50">
+                    <button onclick="invia('cancella')" id="btn-cancella" class="bg-white border-2 border-red-500 text-red-500 px-4 py-2 rounded-lg text-xs font-bold active:bg-red-50 transition-all">
+                        CANCELLA
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="wip-content" class="wip-container">
+            <div class="wip-icon"><i class="fas fa-rocket"></i></div>
+            <h2 id="wip-title" class="text-3xl font-extrabold text-blue-800 uppercase italic"></h2>
+            <p class="text-gray-500 font-medium mt-2 leading-relaxed">Work in Progress...<br><span class="text-blue-600 font-bold">Stiamo costruendo il futuro.</span></p>
+        </div>
+
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md h-20 nav-shadow flex justify-around items-center px-2 z-50">
+        <a href="#" onclick="showSection('Home')" class="flex flex-col items-center text-blue-600 group">
+            <i class="fas fa-house-chimney text-xl group-active:scale-125 transition"></i>
+            <span class="text-[10px] font-bold mt-1">HOME</span>
+        </a>
+        <a href="#" onclick="showSection('Statistiche')" class="flex flex-col items-center text-gray-400 hover:text-blue-500">
+            <i class="fas fa-chart-simple text-xl"></i>
+            <span class="text-[10px] font-bold mt-1">STATS</span>
+        </a>
+        
+        <button onclick="showSection('Azioni')" class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center -mt-10 shadow-xl shadow-blue-300 text-white text-2xl active:scale-75 transition-all duration-300 border-4 border-white">
+            <i class="fas fa-plus"></i>
+        </button>
+
+        <a href="#" onclick="showSection('Schedina')" class="flex flex-col items-center text-gray-400 hover:text-blue-500">
+            <i class="fas fa-receipt text-xl"></i>
+            <span class="text-[10px] font-bold mt-1">SCHEDINA</span>
+        </a>
+        <a href="#" onclick="showSection('Fanta')" class="flex flex-col items-center text-gray-400 hover:text-blue-500">
+            <i class="fas fa-futbol text-xl"></i>
+            <span class="text-[10px] font-bold mt-1">FANTA</span>
+        </a>
+    </nav>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbys50Og-tjsxMzaVA9k7P2Kfb4cjZxuKzYPB6qLCyXAK4W7uqoRJNjgSgXDETApeQ47fA/exec";
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+        }
+
+        function showSection(name) {
+            const home = document.getElementById('home-content');
+            const wip = document.getElementById('wip-content');
+            const title = document.getElementById('wip-title');
+
+            if (name === 'Home') {
+                home.style.display = 'block';
+                wip.style.display = 'none';
+            } else {
+                home.style.display = 'none';
+                wip.style.display = 'flex';
+                title.innerText = name;
+            }
+            if (document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
+        }
+
+        window.handleResponse = function(res) {
+            document.getElementById('btn-iscrivi').classList.remove('btn-loading');
+            document.getElementById('btn-cancella').classList.remove('btn-loading');
+            alert(res.message);
+            if(res.status === 'success') location.reload();
+        };
+
+        function invia(azione) {
+            const btn = azione === 'iscrivi' ? document.getElementById('btn-iscrivi') : document.getElementById('btn-cancella');
+            const email = azione === 'iscrivi' ? document.getElementById('email').value : document.getElementById('emailCanc').value;
+
+            if(!email) { alert("Inserisci la mail!"); return; }
+
+            btn.classList.add('btn-loading');
+
+            let url = `${SCRIPT_URL}?callback=handleResponse&action=${azione}&email=${encodeURIComponent(email)}`;
+            if(azione === 'iscrivi') {
+                url += `&nome=${encodeURIComponent(document.getElementById('nome').value)}`;
+                url += `&cellulare=${encodeURIComponent(document.getElementById('cellulare').value)}`;
+            }
+
+            const script = document.createElement('script');
+            script.src = url;
+            document.body.appendChild(script);
+        }
+    </script>
+</body>
+</html>
